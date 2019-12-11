@@ -26,10 +26,12 @@ import {
   CsvExporter,
   XmlExporter,
   ConsoleAsyncExporter,
+  HierarchyExporter,
+  D3FlameGraphExporter,
+  CpuProfileExporter,
 } from "./default";
 import { Exporter, ExporterEvents } from "./exporter";
 import { Suite } from "../suite";
-import HierarchyExporter from "./default/hierarchy-exporter";
 
 /**
  * Manages the default and custom exporters.
@@ -111,6 +113,12 @@ export default class ExportManager {
           break;
         case "hierarchy":
           exporter = new HierarchyExporter(this.em);
+          break;
+        case "d3-flamegraph":
+          exporter = new D3FlameGraphExporter(this.em);
+          break;
+        case "cpu-profile":
+          exporter = new CpuProfileExporter(this.em);
           break;
         default: {
           const filepath = path.resolve(path.posix.join(process.cwd(), exporterString));

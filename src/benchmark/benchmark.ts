@@ -16,10 +16,12 @@
 /* eslint-disable no-await-in-loop */
 
 import { mergeWith, sum } from "lodash";
+import { Profiler } from "inspector";
 import Timer from "./timer";
 import { Analytics, FullAnalysis } from "./analytics";
 import { BenchmarkOptions, DefaultBenchmarkOptions } from "../config";
 import { MemoryBenchmark, Snapshot } from "./memory-benchmark";
+import CpuProfiler from "./cpu-profiler";
 
 /**
  * Benchmark is responsible for the actual benchmarking.
@@ -133,12 +135,22 @@ export class Benchmark {
       samples = this.getSamples(optimalCount).map(sample => sample / optimalCount);
     }
 
+    // Memory benchmarking part
     let snapshots: Snapshot[] = [];
     if (this.options.memoryBenchmark === true) {
       const memBench = new MemoryBenchmark(this.fn, optimalCount, this.async, this.options);
       snapshots = await memBench.start();
 
       this.runTeardowns();
+    }
+
+    let profile: Profiler.Profile;
+    if (this.options.cpuProfiling === true) {
+      const count = Math.min(
+        Math.max(this.options.minCpuProfilingIterations, optimalCount),
+        this.options.maxCpuProfilingIterations,
+      );
+      profile = await CpuProfiler.profileFunction(this.fn, count, this.options.samplingInterval);
     }
 
     const stats = Analytics.getFullAnalysis(samples);
@@ -153,11 +165,15 @@ export class Benchmark {
       options: this.options,
     } as BenchmarkResult;
 
-    if (snapshots.length !== 0) {
+    if (this.options.memoryBenchmark === true) {
       result.memorySnapshots = snapshots;
       result.memoryUsage = Analytics.getMedian(
         snapshots.map(s => s.during.heapUsed - s.pre.heapUsed),
       );
+    }
+
+    if (this.options.cpuProfiling === true) {
+      result.cpuProfile = profile;
     }
 
     return Promise.resolve(result);
@@ -403,6 +419,7 @@ interface BenchmarkResult {
   options: BenchmarkOptions;
   memorySnapshots?: Snapshot[];
   memoryUsage?: number;
+  cpuProfile?: Profiler.Profile;
 }
 
 export { BenchmarkResult };

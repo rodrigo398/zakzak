@@ -19,6 +19,10 @@ describe("Options", () => {
         memoryBenchmark: true,
         maxMemorySamples: 10,
         minMemorySamples: 1,
+        cpuProfiling: true,
+        maxCpuProfilingIterations: 0,
+        minCpuProfilingIterations: 0,
+        samplingInterval: 1,
       };
 
       expect(DefaultBenchmarkOptions).to.have.all.keys(options);

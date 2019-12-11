@@ -60,6 +60,22 @@ export interface BenchmarkOptions {
    * Minimum amount of samples/snapshots the memory benchmark should take
    */
   minMemorySamples?: number;
+  /**
+   * Flag that enables/disables cpu profiling
+   */
+  cpuProfiling?: boolean;
+  /**
+   * Minimum amount of times that the code should be repeated while the profiler is running
+   */
+  minCpuProfilingIterations?: number;
+  /**
+   * Maximum amount of times that the code should be repeated while the profiler is running
+   */
+  maxCpuProfilingIterations?: number;
+  /**
+   * Sampling interval for the profiler in microseconds
+   */
+  samplingInterval?: number;
 }
 
 /**
@@ -105,14 +121,18 @@ export interface OptionsWrapper {
  */
 export const DefaultBenchmarkOptions: BenchmarkOptions = {
   minTime: 50 * TimeUnit.Millisecond,
-  minSamples: 5,
   maxTime: 5 * TimeUnit.Second,
+  minSamples: 5,
   maxSamples: 5000,
   minIterations: 0,
   maxIterations: 0,
   memoryBenchmark: false,
-  maxMemorySamples: 100,
   minMemorySamples: 10,
+  maxMemorySamples: 100,
+  cpuProfiling: false,
+  minCpuProfilingIterations: 100,
+  maxCpuProfilingIterations: 10000,
+  samplingInterval: 5000,
 };
 
 /**

@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import ConsoleExporter from "./console-exporter";
-import ConsoleAsyncExporter from "./console-async-exporter";
-import CsvExporter from "./csv-exporter";
-import JsonExporter from "./json-exporter";
-import XmlExporter from "./xml-exporter";
-import HierarchyExporter from "./hierarchy-exporter";
-import D3FlameGraphExporter from "./d3-flamegraph.exporter";
-import CpuProfileExporter from "./cpu-profile-exporter";
+import { writeFileSync } from "fs";
+import { replace } from "lodash";
+import { Exporter } from "../exporter";
+import { BenchmarkResult } from "../../benchmark";
 
-export {
-  ConsoleExporter,
-  ConsoleAsyncExporter,
-  CsvExporter,
-  JsonExporter,
-  XmlExporter,
-  HierarchyExporter,
-  D3FlameGraphExporter,
-  CpuProfileExporter,
-};
+export default class CpuProfileExporter extends Exporter {
+  public onResult(result: BenchmarkResult) {
+    if (result.cpuProfile) {
+      const data = JSON.stringify(result.cpuProfile);
+      writeFileSync(`${replace(result.name, " ", "-")}.profile.json`, data, {
+        flag: "w",
+      });
+    }
+  }
+}

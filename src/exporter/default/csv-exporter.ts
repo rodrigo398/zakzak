@@ -14,32 +14,30 @@
  * limitations under the License.
  */
 
-import { createObjectCsvWriter } from "csv-writer";
+import fs from "fs";
 import { Exporter } from "../exporter";
 import { BenchmarkResult } from "../../benchmark";
 
 export default class CsvExporter extends Exporter {
   public onFinished(results: BenchmarkResult[]): void {
-    const csvWriter = createObjectCsvWriter({
-      path: "benchmark.data.csv",
-      header: [
-        { id: "name", title: "Name" },
-        { id: "file", title: "File" },
-        { id: "measurements", title: "Measurements" },
-        { id: "cycles", title: "Cycles" },
-        { id: "mean", title: "Mean" },
-        { id: "median", title: "Median" },
-        { id: "mode", title: "Mode" },
-        { id: "stddev", title: "StdandardDeviation" },
-        { id: "stderr", title: "StdandardError" },
-        { id: "moe", title: "MarginOfError" },
-        { id: "min", title: "Min" },
-        { id: "max", title: "Max" },
-        { id: "mem", title: "Memory" },
-      ],
-    });
+    const path = "benchmark.data.csv";
+    const headers = [
+      { id: "name", title: "Name" },
+      { id: "file", title: "File" },
+      { id: "measurements", title: "Measurements" },
+      { id: "cycles", title: "Cycles" },
+      { id: "mean", title: "Mean" },
+      { id: "median", title: "Median" },
+      { id: "mode", title: "Mode" },
+      { id: "stddev", title: "StdandardDeviation" },
+      { id: "stderr", title: "StdandardError" },
+      { id: "moe", title: "MarginOfError" },
+      { id: "min", title: "Min" },
+      { id: "max", title: "Max" },
+      { id: "mem", title: "Memory" },
+    ];
 
-    const records = results.map(r => {
+    const records: { [key: string]: any } = results.map(r => {
       return {
         name: r.name,
         file: r.filename,
@@ -57,6 +55,14 @@ export default class CsvExporter extends Exporter {
       };
     });
 
-    csvWriter.writeRecords(records);
+    const headerLine = headers.map(h => h.title).reduce((p, c) => `${p},${c}`);
+    const content: string[] = records.map((r: any) =>
+      headers.map(h => String(r[h.id])).reduce((p, c) => `${p},${c}`),
+    );
+    content.unshift(headerLine);
+    fs.writeFileSync(
+      path,
+      content.reduce((p, c) => `${p}\n${c}`),
+    );
   }
 }

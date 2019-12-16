@@ -16,7 +16,6 @@
 
 import { last } from "lodash";
 import { table } from "table";
-import chalk from "chalk";
 import { Exporter } from "../exporter";
 import { BenchmarkResult } from "../../benchmark";
 import TimeUnit from "../../time";
@@ -47,31 +46,18 @@ export default class ConsoleExporter extends Exporter {
       r.memoryUsage ? `${r.memoryUsage} bytes` : "-",
     ]);
 
-    data.push(
-      ...this.errors.map(e => [
-        chalk.red(last(e.id.split(":"))),
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-      ]),
-    );
+    data.push(...this.errors.map(e => [last(e.id.split(":")), "-", "-", "-", "-", "-", "-", "-"]));
 
     const output = table([header, ...data]);
 
     console.log(output);
 
     if (this.errors.length > 0) {
-      console.log(chalk.red(`\n${this.errors.length} benchmarks failed.\n`));
+      console.log(`\n${this.errors.length} benchmarks failed.\n`);
       console.log(
-        chalk.red(
-          this.errors
-            .map(v => `* ${v.id} failed with:\n\t${v.error.message.replace("\n", "\n\t")}`)
-            .join("\n"),
-        ),
+        this.errors
+          .map(v => `* ${v.id} failed with:\n\t${v.error.message.replace("\n", "\n\t")}`)
+          .join("\n"),
       );
       console.log();
     }

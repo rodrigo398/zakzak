@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { last } from "lodash";
+import { last, groupBy } from "lodash";
 import { table } from "table";
 import { Exporter } from "../exporter";
 import { BenchmarkResult } from "../../benchmark";
@@ -25,6 +25,25 @@ import TimeUnit from "../../time";
  */
 export default class ConsoleExporter extends Exporter {
   public onFinished(results: BenchmarkResult[]): void {
+    const entries = results.map(result => ({
+      suite: result.id
+        .split(":")
+        .slice(0, -1)
+        .join(" >> "),
+      result,
+    }));
+    const groups = groupBy(entries, e => e.suite);
+    Object.keys(groups).forEach(group => {
+      const r = groups[group].map(g => g.result);
+      const s = groups[group][0].suite;
+      this.printSuite(s, r);
+    });
+    this.printErrors();
+  }
+
+  private printSuite(suite: string, results: BenchmarkResult[]): void {
+    console.log(suite);
+
     const header = [
       "Name",
       "Measurements",
@@ -51,7 +70,9 @@ export default class ConsoleExporter extends Exporter {
     const output = table([header, ...data]);
 
     console.log(output);
+  }
 
+  private printErrors() {
     if (this.errors.length > 0) {
       console.log(`\n${this.errors.length} benchmarks failed.\n`);
       console.log(

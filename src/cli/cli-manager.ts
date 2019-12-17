@@ -15,7 +15,6 @@
  */
 
 import figlet from "figlet";
-import { terminal } from "terminal-kit";
 import commander from "commander";
 import path from "path";
 import fs from "fs";
@@ -83,11 +82,9 @@ export default class CLIManager {
    */
   public static printHeader() {
     console.log(
-      terminal.brightGreen(
-        figlet.textSync("ZAKZAK", {
-          font: "3D-ASCII",
-        }),
-      ),
+      figlet.textSync("ZAKZAK", {
+        font: "3D-ASCII",
+      }),
     );
   }
 

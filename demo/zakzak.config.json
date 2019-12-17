@@ -18,6 +18,6 @@
     "runParallel": 1,
     "pattern": "./**/*.benchmark.js",
     "path": "./dist",
-    "exporter": ["hierarchy", "d3-flamegraph"]
+    "exporter": ["console"]
   }
 }

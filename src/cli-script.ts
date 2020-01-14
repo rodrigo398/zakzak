@@ -26,13 +26,5 @@ const entrypoint = path.posix.join(
   "node_modules/@dynatrace/zakzak/dist/src/entrypoint.js",
 );
 
-try {
-  // eslint-disable-next-line import/no-dynamic-require, global-require
-  require(entrypoint);
-} catch (error) {
-  if (error instanceof Error && error.message.indexOf("Cannot find module") !== -1) {
-    console.error(`No zakzak installation found under ${entrypoint}`);
-  } else {
-    console.error(error);
-  }
-}
+// eslint-disable-next-line import/no-dynamic-require, global-require
+require(entrypoint);

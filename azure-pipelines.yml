@@ -57,6 +57,7 @@ steps:
     contents: "*.tgz"
     targetFolder: $(Build.ArtifactStagingDirectory)/npm
   displayName: "Copy npm package"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
 - task: CopyFiles@2
   inputs:
@@ -64,6 +65,7 @@ steps:
     contents: "package.json"
     targetFolder: $(Build.ArtifactStagingDirectory)/npm
   displayName: "Copy package.json"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
 - task: CopyFiles@2
   inputs:
@@ -71,6 +73,7 @@ steps:
     contents: "RELEASE_NOTES.md"
     targetFolder: $(Build.ArtifactStagingDirectory)/release
   displayName: "Copy release notes"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
 - task: Bash@3
   inputs:
@@ -96,15 +99,18 @@ steps:
       	echo "no new version"
       fi
   displayName: "Check version change"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)/npm'
     artifactName: npm
   displayName: 'Publish npm artifact'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)/release'
     artifactName: release
   displayName: 'Publish release notes'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
